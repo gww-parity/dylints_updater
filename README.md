@@ -38,6 +38,60 @@ cargo install --git https://github.com/gww-parity/dylints_updater.git --branch d
 
 This project is used e.g. with Dylint lints for [Substrate]: [`https://github.com/gww-parity/substrate_lints`](https://github.com/gww-parity/substrate_lints)
 
+# Example usage
+
+```
+# when new lint added or changed toolchain
+cd directory_with_lints_projects_directories
+dylints_updater
+```
+
+And then
+
+```
+# to lint with mega_lint
+cd project_to_lint
+cargo dylint mega_lint
+# or with all lints
+cargo dylint --all
+```
+
+(more options line `cargo dylint --list`  availabe with dylint help and documentation)
+
+This repository contains example [Dockerfile](Dockerfile) so you can also try with it:
+
+```
+docker build .
+```
+
+To repeat output/run by yourself last command in dockerfile:
+
+```
+# get image hash (or tag it if you prefer)
+image_hash="$(docker build .|tail -n 1|awk '{print $NF}')"
+# and run lints:
+docker run $image_hash bash -c 'cd /substrate_lints/write_and_err/inputs/pseudo_write_and_err_00; cargo dylint write_and_error'
+```
+
+to get lintint output for example:
+
+```
+warning: check_fn match! (fn_kind: "Fn", node_id: NodeId(268) visitor.found_return=true write=`Some(src/lib.rs:117:3: 117:22 (#0))` err=`Some(src/lib.rs:118:3: 118:28 (#0))`
+   --> src/lib.rs:116:1
+    |
+116 | / pub fn xyz_should_match<T: Config>(origin: OriginFor<T>) -> DispatchResult {
+117 | |   XYZ::<T>::put(true);
+118 | |   ensure_root::<T>(origin)?;
+119 | |   Ok(())
+120 | |   // this pattern is wrong because we could both change storage and return an error
+121 | | }
+    | |_^
+    |
+    = note: `#[warn(write_and_error)]` on by default
+<<... cut ...>>
+```
+
+
 # License
 
 [License](LICENSE)
