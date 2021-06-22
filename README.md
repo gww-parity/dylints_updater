@@ -1,4 +1,4 @@
-# Dylint updater
+# Dylint updater - updating lints to new toolchain made easy!
 
 [Dylint] require lints :
 
